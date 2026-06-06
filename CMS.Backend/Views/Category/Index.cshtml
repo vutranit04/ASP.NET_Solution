@@ -1,20 +1,30 @@
-﻿@*
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
     //Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 18/5/2026
 //Version: 1.0
+
 *@
 @{
     @model IEnumerable<CMS.Data.Entities.Category>
 
     <h2 class="text-primary">DANH SÁCH DANH MỤC (DỮ LIỆU MẪU)</h2>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Thêm danh mục mới
+    </a>
+
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Tên danh mục</th>
                 <th>Mô tả</th>
+                <th style="width:150px">Thao tác</th>
             </tr>
         </thead>
         <tbody>
@@ -24,6 +34,15 @@
                     <td>@item.Id</td>
                     <td>@item.Name</td>
                     <td>@item.Description</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-outline-warning">Sửa</a>
+
+                        <a asp-action="Delete" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">Xóa</a>
+                    </td>
+
                 </tr>
             }
         </tbody>
