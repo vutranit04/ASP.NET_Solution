@@ -71,3 +71,16 @@
 
 
 }
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+    <script>
+        // 2. Kích hoạt trình soạn thảo cho thẻ textarea có id là 'Content'
+        ClassicEditor
+            .create(document.querySelector('#Content'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+}
+
