@@ -33,6 +33,17 @@ builder.Services.AddCors(options => {
               .AllowAnyHeader();
     });
 });
+// ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Cho phép ReactJS ở port 3000 gọi tới
+              .AllowAnyHeader()                     // Cho phép mọi loại Header (Content-Type, Authorization...)
+              .AllowAnyMethod()                     // Cho phép mọi phương thức HTTP (GET, POST, PUT, DELETE)
+              .AllowCredentials();                  // Hỗ trợ truyền Cookie/Session nếu cần sau này
+    });
+});
 
 var app = builder.Build();
 
@@ -60,6 +71,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 // [VỊ TRÍ ĐẶT CORS]: Phải nằm ngay giữa UseRouting và app.UseAuthentication(); UseAuthorization();
+app.UseStaticFiles();
+
+// Kích hoạt CORS đúng vị trí này
+app.UseCors("AllowReactApp");
 app.UseCors("AllowAll");
 // ===================================
 app.UseAuthentication(); // BƯỚC A: Xác nhận "Anh là ai?" (Kiểm tra thẻ bài)
