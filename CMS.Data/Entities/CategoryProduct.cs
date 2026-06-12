@@ -22,7 +22,8 @@ namespace CMS.Data.Entities
         [StringLength(100)]
         public string Name { get; set; } // Tên danh mục sản phẩm
         public string? Description { get; set; } // Mô tả về danh mục sản phẩm
-
+        public int DisplayOrder { get; set; } // Thứ tự hiển thị của danh mục sản phẩm (số càng nhỏ thì hiển thị càng lên đầu)
+        public bool IsActive { get; set; } // Trạng thái kích hoạt của danh mục sản phẩm (true: hiển thị, false: ẩn)
 
 
         //Quan hệ: một danh mục sản phẩm có nhiều sản phẩm

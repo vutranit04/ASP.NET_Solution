@@ -6,11 +6,13 @@
 //Version: 1.0
 using CMS.Data; // Quan trọng: Phải có dòng này để dùng ApplicationDbContext
 using CMS.Data.Entities; // Quan trọng: Phải có dòng này để dùng lớp Post
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 namespace CMS.Backend.Controllers
 {
+    [Authorize] // Bắt buộc phải đăng nhập mới được vào các hàm bên dưới
     public class PostController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -4,12 +4,14 @@
 //Version: 1.0
 using CMS.Data;
 using CMS.Data.Entities; // Phải có dòng này để dùng lớp User
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 //Cập nhật thêm,xóa ,sửa user và tạo các form cho các action này
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin")] // Chỉ tài khoản có Role là Admin mới được phép vào
     public class UserController : Controller
 
     {

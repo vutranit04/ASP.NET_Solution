@@ -6,6 +6,7 @@
 //Tạo kết nối giữa Controller và Database để lấy dữ liệu thật từ SQL, hiển thị lên View(Không còn sử dụng dữ liệu mẫu)
 using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;//Namespace bắt buộc thêm
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CMS.Backend.Controllers
@@ -13,6 +14,7 @@ namespace CMS.Backend.Controllers
 {
 
     //Controller để quản lý các thể loại (categories) trong hệ thống
+    [Authorize] // Bắt buộc phải đăng nhập mới được vào các hàm bên dưới
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
