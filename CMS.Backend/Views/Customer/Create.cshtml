@@ -1,0 +1,59 @@
+﻿@model CMS.Data.Entities.Customer
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Thêm khách hàng";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h4>THÊM KHÁCH HÀNG</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post">
+
+                <div class="mb-3">
+                    <label>Họ tên</label>
+                    <input asp-for="FullName" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Số điện thoại</label>
+                    <input asp-for="Phone" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Địa chỉ</label>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Mật khẩu</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Lưu
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Quay lại
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

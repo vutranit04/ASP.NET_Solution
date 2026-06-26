@@ -1,0 +1,57 @@
+﻿@model IEnumerable<CMS.Data.Entities.Order>
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Danh sách đơn hàng";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-primary">DANH SÁCH ĐƠN HÀNG</h2>
+
+    <table class="table table-bordered table-hover shadow-sm">
+
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Customer?.FullName</td>
+                    <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <span class="badge bg-info text-dark">
+                            @item.Status
+                        </span>
+                    </td>
+                    <td>
+
+                        <a asp-action="Details" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-primary">Chi tiết</a>
+
+                        <a asp-action="Edit" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-warning">Sửa</a>
+
+                        <a asp-action="Delete" asp-route-id="@item.Id"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Xóa đơn hàng này?')">
+                            Xóa
+                        </a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>

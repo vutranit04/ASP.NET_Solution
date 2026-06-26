@@ -1,0 +1,53 @@
+﻿@model IEnumerable<CMS.Data.Entities.OrderDetail>
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-primary">ORDER DETAILS</h2>
+
+    <a asp-action="Create" class="btn btn-success mb-3">
+        Thêm chi tiết
+    </a>
+
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Order</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.OrderId</td>
+                    <td>@item.Product?.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("N0")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Xóa chi tiết này?')">
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>

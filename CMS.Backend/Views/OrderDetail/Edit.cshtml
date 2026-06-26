@@ -1,0 +1,51 @@
+﻿@model CMS.Data.Entities.OrderDetail
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Sửa Order Detail";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-warning">
+            <h4>SỬA CHI TIẾT ĐƠN HÀNG</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label>Order</label>
+                    <select asp-for="OrderId" asp-items="ViewBag.OrderList" class="form-select"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Product</label>
+                    <select asp-for="ProductId" asp-items="ViewBag.ProductList" class="form-select"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Quantity</label>
+                    <input asp-for="Quantity" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Unit Price</label>
+                    <input asp-for="UnitPrice" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-success">Cập nhật</button>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

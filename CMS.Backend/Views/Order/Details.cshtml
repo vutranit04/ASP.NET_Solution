@@ -1,0 +1,39 @@
+﻿@model CMS.Data.Entities.Order
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h4>CHI TIẾT ĐƠN HÀNG</h4>
+        </div>
+
+        <div class="card-body">
+
+            <p><b>Mã đơn:</b> @Model.Id</p>
+            <p><b>Khách hàng:</b> @Model.Customer?.FullName</p>
+            <p><b>Email:</b> @Model.Customer?.Email</p>
+            <p><b>Ngày đặt:</b> @Model.OrderDate.ToString("dd/MM/yyyy")</p>
+
+            <p>
+                <b>Trạng thái:</b>
+                <span class="badge bg-success">@Model.Status</span>
+            </p>
+
+            <hr />
+
+            <a asp-action="Edit" asp-route-id="@Model.Id"
+               class="btn btn-warning">Sửa</a>
+
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,4 +1,4 @@
-﻿
+
 //H? và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 12/6/2026
@@ -18,14 +18,14 @@ namespace CMS.Backend.Controllers
     [ApiController]
 
     // 3. API Controller phải kế thừa từ ControllerBase (thay vì kế thừa từ Controller như phân hệ MVC)
-    public class PostsController : ControllerBase
+    public class ApiPostsController : ControllerBase
     {
 
         //chỉ được phép đọc dữ liệu bài viết, không có chức năng tạo mới, sửa, xóa (Read-Only API)
         private readonly ApplicationDbContext _context;
 
         // 4. Hàm khởi tạo (Constructor): "Tiêm" ngữ cảnh dữ liệu SQL Server vào để sử dụng
-        public PostsController(ApplicationDbContext context)
+        public ApiPostsController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -39,6 +39,7 @@ namespace CMS.Backend.Controllers
                 .Select(p => new {            // "Gọt tỉa" dữ liệu: chỉ lấy những trường cần thiết ra trang chủ 
                     p.Id,
                     p.Title,
+                    p.Content,
                     p.ImageUrl,
                     p.CreatedDate,
                     CategoryName = p.Category.Name // Kéo trực tiếp tên chuyên mục thay vì chỉ lấy mã ID cộc lốc 
@@ -60,6 +61,7 @@ namespace CMS.Backend.Controllers
                 .Select(p => new {
                     p.Id,
                     p.Title,
+                    p.Content,
                     p.ImageUrl,
                     p.CreatedDate
                 })

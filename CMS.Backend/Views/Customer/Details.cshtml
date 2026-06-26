@@ -1,0 +1,99 @@
+﻿@model CMS.Data.Entities.Customer
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết khách hàng";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h4>CHI TIẾT KHÁCH HÀNG</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <!-- THÔNG TIN KHÁCH HÀNG -->
+                <div class="col-md-6">
+
+                    <h5 class="text-primary">Thông tin cá nhân</h5>
+
+                    <p><b>ID:</b> @Model.Id</p>
+                    <p><b>Họ tên:</b> @Model.FullName</p>
+                    <p><b>Email:</b> @Model.Email</p>
+                    <p><b>Số điện thoại:</b> @Model.Phone</p>
+                    <p><b>Địa chỉ:</b> @Model.Address</p>
+
+                    <hr />
+
+                    <div class="d-flex gap-2">
+
+                        <a asp-action="Edit" asp-route-id="@Model.Id"
+                           class="btn btn-warning">
+                            Sửa
+                        </a>
+
+                        <a asp-action="Index" class="btn btn-secondary">
+                            Quay lại
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@Model.Id"
+                           class="btn btn-danger"
+                           onclick="return confirm('Xóa khách hàng này?')">
+                            Xóa
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- ĐƠN HÀNG -->
+                <div class="col-md-6">
+
+                    <h5 class="text-success">Danh sách đơn hàng</h5>
+
+                    @if (Model.Orders != null && Model.Orders.Any())
+                    {
+                        <table class="table table-bordered table-sm">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var order in Model.Orders)
+                                {
+                                    <tr>
+                                        <td>@order.Id</td>
+                                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@order.Status</td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            Khách hàng chưa có đơn hàng nào.
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

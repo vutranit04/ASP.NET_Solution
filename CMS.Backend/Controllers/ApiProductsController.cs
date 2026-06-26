@@ -18,12 +18,12 @@ namespace CMS.Backend.Controllers
     [ApiController]
 
     // 3. API Controller phải kế thừa từ ControllerBase (thay vì kế thừa từ Controller như phân hệ MVC)
-    public class ProductsController : ControllerBase
+    public class ApiProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
         // 4. Hàm khởi tạo (Constructor): "Tiêm" ngữ cảnh dữ liệu SQL Server vào để sử dụng
-        public ProductsController(ApplicationDbContext context)
+        public ApiProductsController(ApplicationDbContext context)
         {
             _context = context;
         }

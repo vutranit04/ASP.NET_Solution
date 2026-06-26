@@ -12,19 +12,19 @@ using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Cấu hình đường dẫn API: api/CategoriesProducts
+    // 1. Cấu hình đường dẫn API: api/ApiCategoriesProducts
     [Route("api/[controller]")]
 
     // 2. Kích hoạt tính năng tự động kiểm tra lỗi dữ liệu (Validation)
     [ApiController]
 
     // 3. Kế thừa ControllerBase để tối ưu bộ nhớ cho API thuần dữ liệu JSON
-    public class CategoriesProductsController : ControllerBase
+    public class ApiCategoriesProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
         // 4. Hàm khởi tạo: Nạp cơ sở dữ liệu SQL Server vào Controller thông qua DI
-        public CategoriesProductsController(ApplicationDbContext context)
+        public ApiCategoriesProductsController(ApplicationDbContext context)
         {
             _context = context;
         }

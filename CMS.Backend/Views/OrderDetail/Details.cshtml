@@ -1,0 +1,70 @@
+﻿@model CMS.Data.Entities.OrderDetail
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết Order Detail";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h4>CHI TIẾT ORDER DETAIL</h4>
+        </div>
+
+        <div class="card-body">
+
+            <p><b>ID:</b> @Model.Id</p>
+
+            <p>
+                <b>Order:</b> #@Model.OrderId
+                @if (Model.Order != null)
+                {
+                    <span>(@Model.Order.Status)</span>
+                }
+            </p>
+
+            <p>
+                <b>Sản phẩm:</b> @Model.Product?.Name
+            </p>
+
+            <p>
+                <b>Số lượng:</b> @Model.Quantity
+            </p>
+
+            <p>
+                <b>Đơn giá:</b> @Model.UnitPrice.ToString("N0") đ
+            </p>
+
+            <p>
+                <b>Thành tiền:</b>
+                @(Model.Quantity* Model.UnitPrice).ToString("N0") đ
+            </p>
+
+            <hr />
+
+            <div class="d-flex gap-2">
+
+                <a asp-action="Edit" asp-route-id="@Model.Id"
+                   class="btn btn-warning">
+                    Sửa
+                </a>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Quay lại
+                </a>
+
+                <a asp-action="Delete" asp-route-id="@Model.Id"
+                   class="btn btn-danger"
+                   onclick="return confirm('Xóa chi tiết này?')">
+                    Xóa
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

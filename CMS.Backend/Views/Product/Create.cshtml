@@ -1,0 +1,64 @@
+@model CMS.Data.Entities.Product
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Thêm sản phẩm";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h4>THÊM SẢN PHẨM</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label class="fw-bold">Tên sản phẩm</label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold">Giá</label>
+                    <input asp-for="Price" type="number" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold">Hình ảnh sản phẩm</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                    <small class="text-muted">Chọn file ảnh từ máy tính (JPG, PNG, WEBP...)</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold">Danh mục</label>
+                    <select asp-for="CategoryProductId"
+                            asp-items="ViewBag.CategoryList"
+                            class="form-select">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Lưu
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Quay lại
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

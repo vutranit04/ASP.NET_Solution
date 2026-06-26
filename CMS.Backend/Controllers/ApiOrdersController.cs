@@ -15,11 +15,11 @@ namespace CMS.Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrdersController : ControllerBase
+    public class ApiOrdersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public OrdersController(ApplicationDbContext context)
+        public ApiOrdersController(ApplicationDbContext context)
         {
             _context = context;
         }
