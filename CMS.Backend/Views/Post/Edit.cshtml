@@ -72,12 +72,48 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
     <script>
+        class MyUploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+            upload() {
+                return this.loader.file
+                    .then(file => new Promise((resolve, reject) => {
+                        const data = new FormData();
+                        data.append('upload', file);
+
+                        fetch('/api/upload-image', {
+                            method: 'POST',
+                            body: data
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.error) {
+                                reject(result.error.message);
+                            } else {
+                                resolve({
+                                    default: result.url
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            reject(error.message || 'Lỗi khi upload ảnh');
+                        });
+                    }));
+            }
+            abort() {}
+        }
+
+        function MyCustomUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new MyUploadAdapter(loader);
+            };
+        }
+
         // Kích hoạt trình soạn thảo với chức năng upload ảnh trực tiếp vào nội dung bài viết
         ClassicEditor
             .create(document.querySelector('#Content'), {
-                simpleUpload: {
-                    uploadUrl: '/api/upload-image'
-                }
+                extraPlugins: [MyCustomUploadAdapterPlugin]
             })
             .catch(error => {
                 console.error(error);

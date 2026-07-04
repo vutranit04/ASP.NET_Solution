@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // Đọc cấu hình từ file .env (REACT_APP_API_URL, REACT_APP_IMAGE_BASE_URL)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost:7298/api';
-const IMAGE_BASE_URL = process.env.REACT_APP_IMAGE_BASE_URL || 'https://localhost:7298';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://localhost:7298/api';
+export const IMAGE_BASE_URL = process.env.REACT_APP_IMAGE_BASE_URL || 'https://localhost:7298';
 
 // Khởi tạo một thực thể axios với cấu hình base chung
 const axiosClient = axios.create({

@@ -41,6 +41,13 @@ const ProductCard = ({ item, addToCart }) => {
             </div>
 
             <h4 style={styles.name}>{item.name}</h4>
+            <div style={styles.stockLabel}>
+                {(item.stockQuantity ?? item.StockQuantity ?? 0) > 0 ? (
+                    <span>Còn lại: <strong style={{ color: '#28a745' }}>{item.stockQuantity ?? item.StockQuantity ?? 0}</strong></span>
+                ) : (
+                    <span style={{ color: '#ff2e2e', fontWeight: 'bold' }}>Hết hàng</span>
+                )}
+            </div>
 
             <div style={styles.metaRow}>
                 <p style={styles.price}>
@@ -48,9 +55,6 @@ const ProductCard = ({ item, addToCart }) => {
                         style: 'currency',
                         currency: 'VND'
                     }).format(item.price)}
-                </p>
-                <p style={styles.stock}>
-                    Đai & Võ phục
                 </p>
             </div>
 
@@ -157,6 +161,13 @@ const styles = {
         overflow: "hidden",
         textDecoration: "none"
     },
+    stockLabel: {
+        fontSize: "12px",
+        color: "#666",
+        marginTop: "-5px",
+        marginBottom: "10px",
+        textAlign: "center"
+    },
     metaRow: {
         display: "flex",
         justifyContent: "space-between",
@@ -202,7 +213,9 @@ const styles = {
         textAlign: "center",
         padding: "10px 0",
         background: "#111",
-        border: "1px solid #111",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: "#111",
         color: "white",
         cursor: "pointer",
         borderRadius: "8px",

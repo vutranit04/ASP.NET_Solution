@@ -122,7 +122,9 @@ const styles = {
         justifyContent: "center",
         transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
         boxShadow: "0 4px 10px rgba(0,0,0,0.06)",
-        border: "2px solid #eef0f2"
+        borderWidth: "2px",
+        borderStyle: "solid",
+        borderColor: "#eef0f2"
     },
     imageHover: {
         transform: "translateY(-4px)",

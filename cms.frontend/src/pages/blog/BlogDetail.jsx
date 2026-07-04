@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import blogService from '../../services/blogService';
-import { getFullImageUrl } from '../../api/axiosClient';
+import { getFullImageUrl, IMAGE_BASE_URL } from '../../api/axiosClient';
 
 const BlogDetail = () => {
     const { id } = useParams();
@@ -94,9 +94,11 @@ const BlogDetail = () => {
 
                     {/* ARTICLE BODY CONTENT */}
                     <div 
-                        className="blog-body-content"
+                        className="blog-main-content blog-body-content"
                         style={styles.body}
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ 
+                            __html: post.content ? post.content.replace(/(src=["'])\/images\//g, `$1${IMAGE_BASE_URL}/images/`) : '' 
+                        }}
                     />
                 </article>
             </div>
