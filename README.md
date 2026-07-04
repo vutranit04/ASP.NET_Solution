@@ -108,10 +108,10 @@ Luồng nghiệp vụ mua hàng và kiểm tra kho hàng thực tế được th
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Customer as Khách hàng (React Client)
-    participant Server as Web API (ASP.NET Core)
-    database DB as SQL Server (Database)
-    participant Email as Dịch vụ Email (SMTP Service)
+    actor Customer as "Khách hàng (React Client)"
+    participant Server as "Web API (ASP.NET Core)"
+    participant DB as "SQL Server (Database)"
+    participant Email as "Dịch vụ Email (SMTP Service)"
 
     Customer->>Customer: Chọn sản phẩm & Số lượng mua (Qty)
     Customer->>Customer: Kiểm tra Client-side:<br/>Qty <= StockQuantity? (Nếu sai: Cảnh báo chặn)
