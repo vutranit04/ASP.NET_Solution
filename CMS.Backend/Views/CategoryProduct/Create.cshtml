@@ -1,4 +1,4 @@
-﻿@model CMS.Data.Entities.CategoryProduct
+@model CMS.Data.Entities.CategoryProduct
 
 @{
     Layout = "_LayoutAdmin";
@@ -17,7 +17,8 @@
 
         <div class="card-body">
 
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Tên danh mục:</label>
@@ -29,6 +30,12 @@
                     <label class="form-label fw-bold">Mô tả:</label>
                     <textarea asp-for="Description" class="form-control" rows="5"
                               placeholder="Nhập mô tả..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Hình ảnh đại diện:</label>
+                    <input type="file" name="uploadImage" class="form-control" accept="image/*" />
+                    <small class="text-muted">Chọn file ảnh đại diện cho danh mục sản phẩm (JPG, PNG, WEBP...)</small>
                 </div>
 
                 <div class="mb-3">

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CMS.Data.Entities.Order>
+@model IEnumerable<CMS.Data.Entities.Order>
 
 @{
     Layout = "_LayoutAdmin";
@@ -29,23 +29,35 @@
                     <td>@item.Customer?.FullName</td>
                     <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
                     <td>
-                        <span class="badge bg-info text-dark">
-                            @item.Status
-                        </span>
+                        @if (item.Status == 0)
+                        {
+                            <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                        }
+                        else if (item.Status == 1)
+                        {
+                            <span class="badge bg-primary">Đã thanh toán</span>
+                        }
+                        else if (item.Status == 2)
+                        {
+                            <span class="badge bg-success">Đã giao</span>
+                        }
+                        else if (item.Status == 3)
+                        {
+                            <span class="badge bg-danger">Đã hủy</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Không rõ (@item.Status)</span>
+                        }
                     </td>
                     <td>
 
                         <a asp-action="Details" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-primary">Chi tiết</a>
-
-                        <a asp-action="Edit" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-warning">Sửa</a>
+                           class="btn btn-outline-primary btn-sm">Chi tiết</a>
 
                         <a asp-action="Delete" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('Xóa đơn hàng này?')">
-                            Xóa
-                        </a>
+                           class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Bạn có chắc muốn xóa đơn hàng này?')">Xóa</a>
 
                     </td>
                 </tr>

@@ -1,4 +1,4 @@
-﻿using CMS.Data;
+using CMS.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 //Sử dụng Entity Framework Core để quản lý cơ sở dữ liệu
@@ -16,6 +16,10 @@ builder.Services.AddControllersWithViews(); //Lệnh này vừa nhận diện c�
 // Đăng ký dịch vụ lõi giúp hệ thống tự động bóc tách thông tin Endpoint phục vụ Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // -- Kích hoạt bộ sinh tài liệu API Swagger
+
+// Đăng ký dịch vụ Gửi Email
+builder.Services.Configure<CMS.Backend.Models.EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<CMS.Backend.Services.IEmailService, CMS.Backend.Services.EmailService>();
 // . Khai báo dịch vụ xác thực Cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -24,16 +28,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied"; // Đường dẫn nếu vào trang không được phép
     });
 
-//CẤU HÌNH CHÍNH SÁCH CORS: Cho phép các ứng dụng khác (như ReactJS) có thể gọi API của chúng ta mà không bị chặn bởi trình duyệt
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAll", policy => {
-        // Cho phép mọi nguồn cấp (Origin), mọi phương thức gọi (GET, POST...), và mọi thông tin đi kèm (Header)
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
-// ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
+// CẤU HÌNH CHÍNH SÁCH CORS: Cho phép ReactJS gọi API mà không bị chặn bởi trình duyệt
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
@@ -48,7 +43,11 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Hiển thị chi tiết lỗi khi đang phát triển
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -64,19 +63,16 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger"; // -- Đường dẫn truy cập mặc định sẽ là /swagger
 });
 
-
-
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
 app.UseRouting();
-// [VỊ TRÍ ĐẶT CORS]: Phải nằm ngay giữa UseRouting và app.UseAuthentication(); UseAuthorization();
+
+// Phục vụ file tĩnh (ảnh, CSS, JS...) từ thư mục wwwroot
 app.UseStaticFiles();
 
-// Kích hoạt CORS đúng vị trí này
+// [VỊ TRÍ ĐẶT CORS]: Phải nằm ngay giữa UseRouting và UseAuthentication/UseAuthorization
 app.UseCors("AllowReactApp");
-app.UseCors("AllowAll");
-// ===================================
+
 app.UseAuthentication(); // BƯỚC A: Xác nhận "Anh là ai?" (Kiểm tra thẻ bài)
 app.UseAuthorization();  // BƯỚC B: Xác nhận "Anh được làm gì?" (Kiểm tra quyền)
 
@@ -94,3 +90,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+

@@ -8,9 +8,9 @@ const LatestBlog = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        blogService.getAllPosts() // Slide 25
+        blogService.getLatestPosts()
             .then(res => {
-                setLatestPosts(res.slice(0, 3)); // Lấy 3 bài viết mới nhất (Slide 25)
+                setLatestPosts(res); // Nhận trực tiếp 3 bài viết mới từ API
                 setLoading(false);
             })
             .catch(err => {

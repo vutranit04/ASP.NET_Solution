@@ -1,4 +1,4 @@
-﻿//Họ và tên: Trần Minh Vũ
+//Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 13/6/2026
 //Version: 1.0
@@ -64,6 +64,10 @@ namespace CMS.Backend.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (!string.IsNullOrEmpty(model.PasswordHash))
+                {
+                    model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
+                }
                 _context.Customers.Add(model);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -93,6 +97,18 @@ namespace CMS.Backend.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingCustomer = _context.Customers.AsNoTracking().FirstOrDefault(c => c.Id == model.Id);
+                if (existingCustomer != null)
+                {
+                    if (!string.IsNullOrEmpty(model.PasswordHash))
+                    {
+                        model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
+                    }
+                    else
+                    {
+                        model.PasswordHash = existingCustomer.PasswordHash;
+                    }
+                }
                 _context.Customers.Update(model);
                 _context.SaveChanges();
                 return RedirectToAction("Index");

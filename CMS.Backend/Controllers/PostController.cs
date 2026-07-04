@@ -1,4 +1,4 @@
-﻿
+
 
 //Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
@@ -16,10 +16,12 @@ namespace CMS.Backend.Controllers
     public class PostController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public PostController(ApplicationDbContext context)
+        public PostController(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
         // Hàm Index: Hiển thị danh sách bài viết mẫu
         public IActionResult Index(int? id)
@@ -67,33 +69,59 @@ namespace CMS.Backend.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(Post model, IFormFile uploadImage)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Post model, IFormFile? uploadImage)
         {
+            // Xóa lỗi validation của navigation property (không được bind từ form)
+            ModelState.Remove("Category");
+
+            // Xử lý upload ảnh nếu người dùng chọn file
             if (uploadImage != null && uploadImage.Length > 0)
             {
-                // 1. Định nghĩa đường dẫn lưu file: wwwroot/uploads
-                string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-
-                // Tạo thư mục nếu chưa tồn tại
-                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-
-                // 2. Tạo tên file duy nhất để không bị đè dữ liệu
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
-                string filePath = Path.Combine(folder, fileName);
-
-                // 3. Chép file vào thư mục
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    uploadImage.CopyTo(stream);
-                }
+                    // Tạo tên file duy nhất để không bị đè dữ liệu
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
 
-                // 4. Lưu đường dẫn vào CSDL để sau này hiển thị
-                model.ImageUrl = "/uploads/" + fileName;
+                    // Đảm bảo thư mục images tồn tại trước khi lưu file (hỗ trợ fallback nếu WebRootPath null)
+                    var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                    string imageFolder = Path.Combine(webRoot, "images");
+                    if (!Directory.Exists(imageFolder))
+                    {
+                        Directory.CreateDirectory(imageFolder);
+                    }
+
+                    string filePath = Path.Combine(imageFolder, fileName);
+
+                    // Chép file vào thư mục
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        uploadImage.CopyTo(stream);
+                    }
+
+                    // Lưu đường dẫn vào CSDL để sau này hiển thị
+                    model.ImageUrl = "/images/" + fileName;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi upload ảnh: " + ex.Message);
+                    ViewBag.CategoryList = new SelectList(_context.Categories, "Id", "Name");
+                    return View(model);
+                }
             }
 
-            _context.Posts.Add(model);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                _context.Posts.Add(model);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi khi lưu dữ liệu: " + ex.Message);
+                ViewBag.CategoryList = new SelectList(_context.Categories, "Id", "Name");
+                return View(model);
+            }
         }
         //Chức năng xóa bài viết
         public IActionResult Delete(int id)
@@ -126,25 +154,44 @@ namespace CMS.Backend.Controllers
 
         // POST: Thực hiện cập nhật
         [HttpPost]
-        public IActionResult Edit(Post model, IFormFile uploadImage)
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Post model, IFormFile? uploadImage)
         {
+            // Xóa lỗi validation của navigation property (không được bind từ form)
+            ModelState.Remove("Category");
+
             // Bước 1: Kiểm tra xem người dùng có chọn file ảnh mới không
             if (uploadImage != null && uploadImage.Length > 0)
             {
-                // Thực hiện quy trình upload giống như trang Create
-                string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
-                string filePath = Path.Combine(folder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    uploadImage.CopyTo(stream);
-                }
+                    // Tạo tên file duy nhất
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
 
-                // Cập nhật đường dẫn ảnh mới vào model
-                model.ImageUrl = "/uploads/" + fileName;
+                    // Đảm bảo thư mục images tồn tại trước khi lưu file (hỗ trợ fallback nếu WebRootPath null)
+                    var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                    string imageFolder = Path.Combine(webRoot, "images");
+                    if (!Directory.Exists(imageFolder))
+                    {
+                        Directory.CreateDirectory(imageFolder);
+                    }
+
+                    string filePath = Path.Combine(imageFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        uploadImage.CopyTo(stream);
+                    }
+
+                    // Cập nhật đường dẫn ảnh mới vào model
+                    model.ImageUrl = "/images/" + fileName;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi upload ảnh: " + ex.Message);
+                    ViewBag.CategoryList = new SelectList(_context.Categories, "Id", "Name");
+                    return View(model);
+                }
             }
             else
             {
@@ -156,15 +203,63 @@ namespace CMS.Backend.Controllers
                     model.ImageUrl = oldPost.ImageUrl;
                 }
             }
-            _context.Posts.Update(model);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+
+            try
+            {
+                _context.Posts.Update(model);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi khi cập nhật dữ liệu: " + ex.Message);
+                ViewBag.CategoryList = new SelectList(_context.Categories, "Id", "Name");
+                return View(model);
+            }
         }
 
+        // API Upload ảnh cho CKEditor (Chèn hình ảnh trực tiếp vào nội dung bài viết)
+        [HttpPost]
+        [Route("/api/upload-image")]
+        public async Task<IActionResult> UploadImage(IFormFile upload)
+        {
+            if (upload == null || upload.Length == 0)
+            {
+                return BadRequest(new { error = new { message = "Không có file ảnh nào được gửi lên" } });
+            }
+
+            try
+            {
+                // Tạo tên file duy nhất để không bị đè dữ liệu
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(upload.FileName);
+
+                // Đảm bảo thư mục images tồn tại
+                var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                string imageFolder = Path.Combine(webRoot, "images");
+                if (!Directory.Exists(imageFolder))
+                {
+                    Directory.CreateDirectory(imageFolder);
+                }
+
+                string filePath = Path.Combine(imageFolder, fileName);
+
+                // Chép file vào thư mục
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await upload.CopyToAsync(stream);
+                }
+
+                // Trả về URL ảnh theo chuẩn CKEditor 5 SimpleUploadAdapter
+                string imageUrl = "/images/" + fileName;
+                return Ok(new { url = imageUrl });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = new { message = "Lỗi khi upload ảnh: " + ex.Message } });
+            }
+        }
 
 
     }
 
 }
-
-

@@ -1,4 +1,4 @@
-﻿//Họ và tên: Trần Minh Vũ
+//Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 13/6/2026
 //Version: 1.0
@@ -15,10 +15,12 @@ namespace CMS.Backend.Controllers
     public class CategoryProductController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public CategoryProductController(ApplicationDbContext context)
+        public CategoryProductController(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // =========================
@@ -48,8 +50,35 @@ namespace CMS.Backend.Controllers
         // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CategoryProduct model)
+        public IActionResult Create(CategoryProduct model, IFormFile? uploadImage)
         {
+            // Xử lý upload ảnh nếu người dùng chọn file
+            if (uploadImage != null && uploadImage.Length > 0)
+            {
+                try
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
+                    var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                    string imageFolder = Path.Combine(webRoot, "images");
+                    if (!Directory.Exists(imageFolder))
+                    {
+                        Directory.CreateDirectory(imageFolder);
+                    }
+
+                    string filePath = Path.Combine(imageFolder, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        uploadImage.CopyTo(stream);
+                    }
+                    model.ImageUrl = "/images/" + fileName;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi upload ảnh: " + ex.Message);
+                    return View(model);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.CategoriesProducts.Add(model);
@@ -81,8 +110,43 @@ namespace CMS.Backend.Controllers
         // =========================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(CategoryProduct model)
+        public IActionResult Edit(CategoryProduct model, IFormFile? uploadImage)
         {
+            if (uploadImage != null && uploadImage.Length > 0)
+            {
+                try
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadImage.FileName);
+                    var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                    string imageFolder = Path.Combine(webRoot, "images");
+                    if (!Directory.Exists(imageFolder))
+                    {
+                        Directory.CreateDirectory(imageFolder);
+                    }
+
+                    string filePath = Path.Combine(imageFolder, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        uploadImage.CopyTo(stream);
+                    }
+                    model.ImageUrl = "/images/" + fileName;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi upload ảnh: " + ex.Message);
+                    return View(model);
+                }
+            }
+            else
+            {
+                // Giữ lại ảnh cũ nếu không tải lên ảnh mới
+                var oldCategory = _context.CategoriesProducts.AsNoTracking().FirstOrDefault(c => c.Id == model.Id);
+                if (oldCategory != null && string.IsNullOrEmpty(model.ImageUrl))
+                {
+                    model.ImageUrl = oldCategory.ImageUrl;
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.CategoriesProducts.Update(model);

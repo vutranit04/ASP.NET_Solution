@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CMS.Data.Entities.CategoryProduct>
+@model IEnumerable<CMS.Data.Entities.CategoryProduct>
 
 @{
     Layout = "_LayoutAdmin";
@@ -21,6 +21,16 @@
             <div class="col-md-4 mb-3">
 
                 <div class="card shadow-sm border-0">
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name" style="height: 140px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;" />
+                    }
+                    else
+                    {
+                        <div class="bg-secondary text-white text-center py-5" style="height: 140px; border-top-left-radius: 8px; border-top-right-radius: 8px; font-size: 14px;">
+                            Không có hình ảnh
+                        </div>
+                    }
 
                     <div class="card-body">
 

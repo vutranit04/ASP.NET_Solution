@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import blogService from '../../services/blogService';
+import { getFullImageUrl } from '../../api/axiosClient';
 
 const BlogDetail = () => {
     const { id } = useParams();
@@ -51,9 +52,8 @@ const BlogDetail = () => {
         );
     }
 
-    const backendUrl = 'https://localhost:7298';
-    const imageUrl = post.imageUrl 
-        ? (post.imageUrl.startsWith('http') ? post.imageUrl : `${backendUrl}${post.imageUrl}`) 
+    const imageUrl = getFullImageUrl(post.imageUrl) !== 'https://placehold.co/300x300?text=No+Image'
+        ? getFullImageUrl(post.imageUrl)
         : 'https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=1200&auto=format&fit=crop'; // Ảnh võ thuật mặc định
 
     return (

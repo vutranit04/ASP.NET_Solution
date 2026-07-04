@@ -89,7 +89,25 @@ namespace CMS.Backend.Controllers
             return Ok(post);
         }
 
+        // API lấy 3 bài viết MỚI NHẤT
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatest()
+        {
+            var latestPosts = await _context.Posts
+                .OrderByDescending(p => p.Id)
+                .Take(3)
+                .Select(p => new {
+                    p.Id,
+                    p.Title,
+                    p.Content,
+                    p.ImageUrl,
+                    p.CreatedDate,
+                    CategoryName = p.Category.Name
+                })
+                .ToListAsync();
 
+            return Ok(latestPosts);
+        }
     }
 }
 

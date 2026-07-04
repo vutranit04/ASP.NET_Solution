@@ -1,28 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import categoryProductService from '../services/categoryProductService';
+import { getFullImageUrl } from '../api/axiosClient';
 
-const CategoryItem = ({ item }) => {
+const CategoryItem = ({ item, isSelected, onClick }) => {
     const [hovered, setHovered] = useState(false);
+
+    // Hình ảnh nền: dùng imageUrl nếu có, không thì dùng gradient làm fallback
+    const bgImage = item.imageUrl
+        ? `url(${getFullImageUrl(item.imageUrl)})`
+        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
 
     return (
         <div 
-            style={{
-                ...styles.item,
-                ...(hovered ? styles.itemHover : {})
-            }}
+            style={styles.item}
+            onClick={onClick}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            <span>{item.name}</span>
-            <span style={{
-                ...styles.arrow,
-                ...(hovered ? styles.arrowHover : {})
-            }}>›</span>
+          
+            <div 
+                style={{
+                    ...styles.imageWrapper,
+                    backgroundImage: bgImage,
+                    ...(isSelected ? styles.imageSelected : (hovered ? styles.imageHover : {}))
+                }}
+            >
+                {!item.imageUrl && (
+                    <span style={styles.fallbackIcon}>🥋</span>
+                )}
+            </div>
+            
+            {/* Chữ tên danh mục màu đen nằm bên dưới ảnh */}
+            <span 
+                style={{
+                    ...styles.itemText,
+                    ...(isSelected ? styles.itemTextSelected : (hovered ? styles.itemTextHover : {}))
+                }}
+            >
+                {item.name}
+            </span>
         </div>
     );
 };
 
-const CategoryProductList = () => {
+const CategoryProductList = ({ selectedCategoryId, onSelectCategory }) => {
     const [categoryProducts, setCategoryProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -46,25 +67,28 @@ const CategoryProductList = () => {
         return (
             <div style={styles.loading}>
                 <div style={styles.spinner}></div>
-                <p>Đang tải danh mục...</p>
             </div>
         );
     }
 
     return (
         <div style={styles.wrapper}>
-            <div style={styles.header}>
-                <span style={styles.title}>🥋 DANH MỤC SẢN PHẨM</span>
-            </div>
+            <div style={styles.grid}>
+                {/* Mục "Tất cả sản phẩm" */}
+                <CategoryItem 
+                    item={{ id: null, name: "TẤT CẢ SẢN PHẨM", imageUrl: null }} 
+                    isSelected={selectedCategoryId === null}
+                    onClick={() => onSelectCategory(null)}
+                />
 
-            <div>
-                {categoryProducts.length === 0 ? (
-                    <div style={styles.empty}>Không tìm thấy danh mục nào</div>
-                ) : (
-                    categoryProducts.map((item) => (
-                        <CategoryItem key={item.id} item={item} />
-                    ))
-                )}
+                {categoryProducts.map((item) => (
+                    <CategoryItem 
+                        key={item.id} 
+                        item={item} 
+                        isSelected={selectedCategoryId === item.id}
+                        onClick={() => onSelectCategory(item.id)}
+                    />
+                ))}
             </div>
         </div>
     );
@@ -74,68 +98,73 @@ export default CategoryProductList;
 
 const styles = {
     wrapper: {
-        background: "#ffffff",
-        border: "1px solid #eef0f2",
-        borderRadius: 16,
-        padding: 18,
-        color: "#111",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.03)"
+        width: "100%",
+        marginBottom: "35px",
+        marginTop: "15px"
     },
-    header: {
-        borderBottom: "2px solid #ff2e2e",
-        paddingBottom: 12,
-        marginBottom: 12
-    },
-    title: {
-        color: "#111",
-        fontWeight: "800",
-        fontSize: "14px",
-        letterSpacing: 0.5
+    grid: {
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+        gap: "20px"
     },
     item: {
         display: "flex",
-        justifyContent: "space-between",
+        flexDirection: "column",
+        cursor: "pointer"
+    },
+    imageWrapper: {
+        height: "110px",
+        borderRadius: "12px",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        display: "flex",
         alignItems: "center",
-        padding: "12px 10px",
-        borderBottom: "1px solid #f6f6f6",
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-        borderRadius: "8px",
-        fontWeight: "500",
-        fontSize: "14px"
+        justifyContent: "center",
+        transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.06)",
+        border: "2px solid #eef0f2"
     },
-    itemHover: {
-        background: "#fdf1f1",
-        color: "#ff2e2e",
-        paddingLeft: "14px"
+    imageHover: {
+        transform: "translateY(-4px)",
+        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+        borderColor: "#cbd5e1"
     },
-    arrow: {
-        color: "#aaa",
-        fontSize: "18px",
-        transition: "all 0.2s ease"
+    imageSelected: {
+        transform: "translateY(-4px)",
+        boxShadow: "0 8px 20px rgba(255, 46, 46, 0.2)",
+        borderColor: "#ff2e2e"
     },
-    arrowHover: {
-        color: "#ff2e2e",
-        transform: "translateX(2px)"
+    fallbackIcon: {
+        fontSize: "32px",
+        color: "#ffffff"
     },
-    empty: {
-        color: "#777",
-        padding: 10,
-        textAlign: "center"
+    itemText: {
+        marginTop: "10px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        color: "#111111", // Chữ đen mặc định nằm dưới ảnh danh mục
+        letterSpacing: "0.5px",
+        textTransform: "uppercase",
+        textAlign: "center",
+        transition: "color 0.2s ease"
+    },
+    itemTextHover: {
+        color: "#ff2e2e"
+    },
+    itemTextSelected: {
+        color: "#ff2e2e"
     },
     loading: {
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "8px",
-        color: "#666",
+        justifyContent: "center",
         padding: "20px 0"
     },
     spinner: {
-        width: "20px",
-        height: "20px",
-        border: "2px solid #eee",
-        borderTop: "2px solid #ff2e2e",
-        borderRadius: "50%"
+        width: "25px",
+        height: "25px",
+        border: "3px solid #eee",
+        borderTop: "3px solid #ff2e2e",
+        borderRadius: "50%",
+        animation: "spin 1s linear infinite"
     }
 };

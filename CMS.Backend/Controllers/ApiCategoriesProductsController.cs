@@ -1,4 +1,4 @@
-﻿
+
 //H? và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 12/6/2026
@@ -7,7 +7,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data; 
-using System.Threading.Tasks;
+using CMS.Data.Entities;
 using System.Linq;
 
 namespace CMS.Backend.Controllers
@@ -47,7 +47,8 @@ namespace CMS.Backend.Controllers
                         c.Name,
                         c.Description,
                         c.DisplayOrder,
-                        c.IsActive
+                        c.IsActive,
+                        c.ImageUrl
                     })
                     .ToListAsync(); // Chuyển đổi bất đồng bộ sang dạng danh sách mảng
 
@@ -61,6 +62,99 @@ namespace CMS.Backend.Controllers
                     message = "Lỗi kết nối cơ sở dữ liệu hệ thống", 
                     detail = ex.Message
     });
+            }
+        }
+
+        // GET: api/ApiCategoriesProducts/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            try
+            {
+                var category = await _context.CategoriesProducts.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy danh mục sản phẩm này" });
+                }
+                return Ok(category);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống", detail = ex.Message });
+            }
+        }
+
+        // POST: api/ApiCategoriesProducts
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CategoryProduct category)
+        {
+            if (category == null)
+            {
+                return BadRequest(new { message = "Dữ liệu không hợp lệ" });
+            }
+
+            try
+            {
+                _context.CategoriesProducts.Add(category);
+                await _context.SaveChangesAsync();
+                return StatusCode(201, category);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống khi tạo danh mục", detail = ex.Message });
+            }
+        }
+
+        // PUT: api/ApiCategoriesProducts/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] CategoryProduct input)
+        {
+            if (input == null || id != input.Id)
+            {
+                return BadRequest(new { message = "ID danh mục không khớp" });
+            }
+
+            try
+            {
+                var category = await _context.CategoriesProducts.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy danh mục sản phẩm" });
+                }
+
+                category.Name = input.Name;
+                category.Description = input.Description;
+                category.DisplayOrder = input.DisplayOrder;
+                category.IsActive = input.IsActive;
+
+                await _context.SaveChangesAsync();
+                return Ok(category);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống khi cập nhật danh mục", detail = ex.Message });
+            }
+        }
+
+        // DELETE: api/ApiCategoriesProducts/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var category = await _context.CategoriesProducts.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy danh mục sản phẩm" });
+                }
+
+                _context.CategoriesProducts.Remove(category);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Xóa danh mục sản phẩm thành công" });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống khi xóa danh mục", detail = ex.Message });
             }
         }
     }

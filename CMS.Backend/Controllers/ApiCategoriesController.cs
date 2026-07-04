@@ -6,6 +6,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
+using CMS.Data.Entities;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -47,6 +48,102 @@ namespace CMS.Backend.Controllers
                     message = "Lỗi kết nối cơ sở dữ liệu hệ thống", 
                     detail = ex.Message
                 });
+            }
+        }
+
+        // GET: api/ApiCategories/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy danh mục bài viết này" });
+                }
+                return Ok(new
+                {
+                    category.Id,
+                    category.Name,
+                    category.Description
+                });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống", detail = ex.Message });
+            }
+        }
+
+        // POST: api/ApiCategories
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Category category)
+        {
+            if (category == null)
+            {
+                return BadRequest(new { message = "Dữ liệu không hợp lệ" });
+            }
+
+            try
+            {
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+                return StatusCode(201, category);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống khi tạo danh mục bài viết", detail = ex.Message });
+            }
+        }
+
+        // PUT: api/ApiCategories/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Category input)
+        {
+            if (input == null || id != input.Id)
+            {
+                return BadRequest(new { message = "ID danh mục không khớp" });
+            }
+
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy danh mục bài viết" });
+                }
+
+                category.Name = input.Name;
+                category.Description = input.Description;
+
+                await _context.SaveChangesAsync();
+                return Ok(category);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống khi cập nhật danh mục bài viết", detail = ex.Message });
+            }
+        }
+
+        // DELETE: api/ApiCategories/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy danh mục bài viết" });
+                }
+
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Xóa danh mục bài viết thành công" });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống khi xóa danh mục bài viết", detail = ex.Message });
             }
         }
     }

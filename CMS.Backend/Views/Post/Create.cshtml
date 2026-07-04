@@ -1,18 +1,9 @@
-﻿@{
-    Layout = "_LayoutAdmin";
-}
+@model CMS.Data.Entities.Post
 
 @{
     Layout = "_LayoutAdmin";
     ViewData["Title"] = "Thêm bài viết mới";
 }
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-@model CMS.Data.Entities.Post
-
-
 
 <div class="container mt-4">
     <div class="card shadow">
@@ -20,7 +11,7 @@
             <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> THÊM BÀI VIẾT MỚI</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="mb-3">
@@ -43,8 +34,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Link ảnh đại diện (URL):</label>
-                            <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                            <label class="form-label fw-bold">Hình ảnh đại diện:</label>
+                            <input type="file" name="uploadImage" class="form-control" accept="image/*" />
+                            <small class="text-muted">Chọn file ảnh từ máy tính (JPG, PNG, WEBP...)</small>
                         </div>
 
                         <div class="mb-3">
@@ -68,19 +60,19 @@
     </div>
 </div>
 
-
-
-}
 @section Scripts {
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
     <script>
-        // 2. Kích hoạt trình soạn thảo cho thẻ textarea có id là 'Content'
+        // Kích hoạt trình soạn thảo với chức năng upload ảnh trực tiếp vào nội dung bài viết
         ClassicEditor
-            .create(document.querySelector('#Content'))
+            .create(document.querySelector('#Content'), {
+                simpleUpload: {
+                    uploadUrl: '/api/upload-image'
+                }
+            })
             .catch(error => {
                 console.error(error);
             });
     </script>
 }
-

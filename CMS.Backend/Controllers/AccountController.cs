@@ -1,4 +1,4 @@
-﻿//Họ và tên: Trần Minh Vũ
+//Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 12/6/2026 10:39
 //Version: 1.0
@@ -26,8 +26,8 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
-        // 1. Kiểm tra tài khoản trong Database
-        var user = _context.Users.FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+        // 1. Kiểm tra tài khoản trong Database bằng mật khẩu thô
+        var user = _context.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
 
         if (user != null)
         {

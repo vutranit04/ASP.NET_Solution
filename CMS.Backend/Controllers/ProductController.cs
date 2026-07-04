@@ -76,27 +76,55 @@ namespace CMS.Backend.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Product model, IFormFile? ImageFile)
         {
+            // Xóa lỗi validation của navigation property (không được bind từ form)
+            ModelState.Remove("CategoryProduct");
+
             if (ModelState.IsValid)
             {
                 // Xử lý upload ảnh nếu người dùng chọn file
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    // Tạo tên file duy nhất để tránh trùng lặp
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-                    var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    try
                     {
-                        ImageFile.CopyTo(stream);
-                    }
+                        // Tạo tên file duy nhất để tránh trùng lặp
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
 
-                    // Lưu đường dẫn tương đối vào Database
-                    model.ImageUrl = "/images/" + fileName;
+                        // Đảm bảo thư mục images tồn tại trước khi lưu file (hỗ trợ fallback nếu WebRootPath null)
+                        var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                        var imageFolder = Path.Combine(webRoot, "images");
+                        if (!Directory.Exists(imageFolder))
+                        {
+                            Directory.CreateDirectory(imageFolder);
+                        }
+
+                        var filePath = Path.Combine(imageFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            ImageFile.CopyTo(stream);
+                        }
+
+                        // Lưu đường dẫn tương đối vào Database
+                        model.ImageUrl = "/images/" + fileName;
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Lỗi khi upload ảnh: " + ex.Message);
+                        ViewBag.CategoryList = new SelectList(_context.CategoriesProducts, "Id", "Name");
+                        return View(model);
+                    }
                 }
 
-                _context.Products.Add(model);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    _context.Products.Add(model);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi lưu dữ liệu: " + ex.Message);
+                }
             }
 
             ViewBag.CategoryList = new SelectList(_context.CategoriesProducts, "Id", "Name");
@@ -126,107 +154,77 @@ namespace CMS.Backend.Controllers
             return View(product);
         }
 
-        // =========================
-        // EDIT - POST
-        // =========================
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Edit(Product model, IFormFile? ImageFile)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Xử lý upload ảnh mới nếu người dùng chọn file
-        //        if (ImageFile != null && ImageFile.Length > 0)
-        //        {
-        //            // Tạo tên file duy nhất để tránh trùng lặp
-        //            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
-        //            var filePath = Path.Combine(_env.WebRootPath, "images", fileName);
-
-        //            using (var stream = new FileStream(filePath, FileMode.Create))
-        //            {
-        //                ImageFile.CopyTo(stream);
-        //            }
-
-        //            // Cập nhật đường dẫn ảnh mới
-        //            model.ImageUrl = "/images/" + fileName;
-        //        }
-        //        else
-        //        {
-        //            // Nếu không chọn ảnh mới, giữ lại ảnh cũ từ Database
-        //            var existingProduct = _context.Products.AsNoTracking().FirstOrDefault(p => p.Id == model.Id);
-        //            if (existingProduct != null)
-        //            {
-        //                model.ImageUrl = existingProduct.ImageUrl;
-        //            }
-        //        }
-
-        //        _context.Products.Update(model);
-        //        _context.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    ViewBag.CategoryList = new SelectList(_context.CategoriesProducts, "Id", "Name");
-        //    return View(model);
-        //}
+         //=========================
+         //EDIT - POST
+         //=========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Product model, IFormFile? ImageFile)
         {
-            try
+            // Xóa lỗi validation của navigation property (không được bind từ form)
+            ModelState.Remove("CategoryProduct");
+
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    var errors = string.Join("\n",
-                        ModelState.Values
-                            .SelectMany(v => v.Errors)
-                            .Select(e => e.ErrorMessage));
-
-                    return Content("ModelState Error:\n" + errors);
-                }
-
+                // Xử lý upload ảnh mới nếu người dùng chọn file
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine(_env.WebRootPath, "images");
-
-                    if (!Directory.Exists(uploadsFolder))
+                    try
                     {
-                        Directory.CreateDirectory(uploadsFolder);
+                        // Tạo tên file duy nhất để tránh trùng lặp
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
+
+                        // Đảm bảo thư mục images tồn tại trước khi lưu file (hỗ trợ fallback nếu WebRootPath null)
+                        var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+                        var imageFolder = Path.Combine(webRoot, "images");
+                        if (!Directory.Exists(imageFolder))
+                        {
+                            Directory.CreateDirectory(imageFolder);
+                        }
+
+                        var filePath = Path.Combine(imageFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            ImageFile.CopyTo(stream);
+                        }
+
+                        // Cập nhật đường dẫn ảnh mới
+                        model.ImageUrl = "/images/" + fileName;
                     }
-
-                    var fileName = Guid.NewGuid().ToString()
-                                   + Path.GetExtension(ImageFile.FileName);
-
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    catch (Exception ex)
                     {
-                        ImageFile.CopyTo(stream);
+                        ModelState.AddModelError("", "Lỗi khi upload ảnh: " + ex.Message);
+                        ViewBag.CategoryList = new SelectList(_context.CategoriesProducts, "Id", "Name");
+                        return View(model);
                     }
-
-                    model.ImageUrl = "/images/" + fileName;
                 }
                 else
                 {
-                    var existingProduct = _context.Products
-                        .AsNoTracking()
-                        .FirstOrDefault(p => p.Id == model.Id);
-
+                    // Nếu không chọn ảnh mới, giữ lại ảnh cũ từ Database
+                    var existingProduct = _context.Products.AsNoTracking().FirstOrDefault(p => p.Id == model.Id);
                     if (existingProduct != null)
                     {
                         model.ImageUrl = existingProduct.ImageUrl;
                     }
                 }
 
-                _context.Products.Update(model);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Products.Update(model);
+                    _context.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Lỗi khi cập nhật dữ liệu: " + ex.Message);
+                }
+            }
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                return Content(ex.ToString());
-            }
+            ViewBag.CategoryList = new SelectList(_context.CategoriesProducts, "Id", "Name");
+            return View(model);
         }
+
         // =========================
         // DELETE
         // =========================

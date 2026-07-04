@@ -1,4 +1,4 @@
-﻿@model CMS.Data.Entities.Customer
+@model CMS.Data.Entities.Customer
 
 @{
     Layout = "_LayoutAdmin";
@@ -39,7 +39,7 @@
 
                 <div class="mb-3">
                     <label>Mật khẩu</label>
-                    <input asp-for="Password" type="password" class="form-control" />
+                    <input asp-for="PasswordHash" type="password" class="form-control" />
                 </div>
 
                 <button type="submit" class="btn btn-success">

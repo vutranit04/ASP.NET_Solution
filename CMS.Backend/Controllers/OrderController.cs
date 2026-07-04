@@ -1,4 +1,4 @@
-﻿//Họ và tên: Trần Minh Vũ
+//Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 13/6/2026
 //Version: 1.0
@@ -41,6 +41,8 @@ namespace CMS.Backend.Controllers
         {
             var order = _context.Orders
                 .Include(x => x.Customer)
+                .Include(x => x.OrderDetails)
+                    .ThenInclude(od => od.Product)
                 .FirstOrDefault(x => x.Id == id);
 
             if (order == null)
@@ -50,35 +52,23 @@ namespace CMS.Backend.Controllers
         }
 
         // =====================
-        // EDIT - GET
-        // =====================
-        [HttpGet]
-        public IActionResult Edit(int id)
-        {
-            var order = _context.Orders.Find(id);
-
-            if (order == null)
-                return NotFound();
-
-            return View(order);
-        }
-
-        // =====================
-        // EDIT - POST (update status)
+        // UPDATE STATUS (Sửa trực tiếp trạng thái trong chi tiết đơn hàng) (YC #4)
         // =====================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Order model)
+        public IActionResult UpdateStatus(int id, int status)
         {
-            if (ModelState.IsValid)
+            var order = _context.Orders.Find(id);
+            if (order != null)
             {
-                _context.Orders.Update(model);
+                order.Status = status;
                 _context.SaveChanges();
-                return RedirectToAction("Index");
             }
 
-            return View(model);
+            return RedirectToAction("Details", new { id = id });
         }
+
+
 
         // =====================
         // DELETE

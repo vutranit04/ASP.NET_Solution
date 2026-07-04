@@ -1,4 +1,4 @@
-﻿
+
 //Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 16/5/2026
@@ -25,7 +25,8 @@ namespace CMS.Data.Entities
         [Range(0,double.MaxValue, ErrorMessage = "Giá sản phẩm phải lớn hơn hoặc bằng 0")]
         [Column(TypeName = "decimal(18, 2)")]// Định dạng cho cột giá sản phẩm
         public decimal Price { get; set; } // Giá sản phẩm
-        public string? ImageUrl { get; set; } // Hình ảnh đại diện của sản phẩm
+        public string?  ImageUrl { get; set; } // Hình ảnh đại diện của sản phẩm
+        public int StockQuantity { get; set; } // Số lượng tồn kho của sản phẩm
         //khóa ngoại liên kết đến CategoryProduct
         public int CategoryProductId { get; set; }
         [ForeignKey("CategoryProductId")]

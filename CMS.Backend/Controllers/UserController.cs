@@ -1,4 +1,4 @@
-﻿//Họ và tên: Trần Minh Vũ
+//Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
 //Ngày tạo: 12/6/2026
 //Version: 1.0
@@ -78,11 +78,11 @@ namespace CMS.Backend.Controllers
             // 2. Xử lý mật khẩu: Nếu nhập mới thì lấy cái mới, nếu trống thì lấy cái cũ
             if (!string.IsNullOrEmpty(NewPassword))
             {
-                model.PasswordHash = NewPassword; // Sau này sẽ mã hóa tại đây
+                model.Password = NewPassword; // Lưu mật khẩu thô theo thiết kế của User quản trị
             }
             else
             {
-                model.PasswordHash = existingUser.PasswordHash;
+                model.Password = existingUser.Password;
             }
 
             // 3. Cập nhật vào Database

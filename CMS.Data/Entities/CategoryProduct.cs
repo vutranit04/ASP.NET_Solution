@@ -1,4 +1,4 @@
-﻿
+
 
 //Họ và tên: Trần Minh Vũ
 //Mssv: 2122110359
@@ -24,6 +24,7 @@ namespace CMS.Data.Entities
         public string? Description { get; set; } // Mô tả về danh mục sản phẩm
         public int DisplayOrder { get; set; } // Thứ tự hiển thị của danh mục sản phẩm (số càng nhỏ thì hiển thị càng lên đầu)
         public bool IsActive { get; set; } // Trạng thái kích hoạt của danh mục sản phẩm (true: hiển thị, false: ẩn)
+        public string? ImageUrl { get; set; } // Hình ảnh đại diện của danh mục sản phẩm
 
 
         //Quan hệ: một danh mục sản phẩm có nhiều sản phẩm
